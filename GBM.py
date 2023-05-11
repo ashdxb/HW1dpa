@@ -4,6 +4,7 @@ from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from utils import *
 from Encoder import Encoder
+import pickle
 
 # Load the data
 train, labels = get_train()
@@ -90,3 +91,6 @@ print(f"Accuracy: {accuracy:.2f}")
 print(f'F1 Score: {f1:.2f}')
 print(f"Precision: {precision:.2f}")
 print(f"Recall: {recall:.2f}")
+
+pickle.dump(gb_classifier, open('gb_classifier.pkl', 'wb'))
+pickle.dump(xgb_classifier, open('xgb_classifier.pkl', 'wb'))

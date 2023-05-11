@@ -3,6 +3,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from utils import *
 from Encoder import Encoder
+import pickle
 
 # Load the data
 train, labels = get_train()
@@ -22,7 +23,7 @@ test = encode(encoder, test)
 labels = np.array(labels)
 test_labels = np.array(test_labels)
 
-# Initialize the GradientBoostingClassifier
+# Initialize the SVMClassifier
 svm_classifier = SVC(kernel='rbf', C=0.5)
 
 # Train the classifier
@@ -60,4 +61,4 @@ print(f"F1 Score: {f1:.2f}")
 print(f"Precision: {precision:.2f}")
 print(f"Recall: {recall:.2f}")
 
-
+pickle.dump(svm_classifier, open('svm_classifier.pkl', 'wb'))

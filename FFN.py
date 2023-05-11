@@ -4,7 +4,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from Encoder import Encoder
 from utils import *
-from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 
 class FFN(torch.nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -64,12 +64,6 @@ def train_model(model, inputs, targets, test_inputs, test_targets, lr=config['le
             loss.backward()
             optimizer.step()
 
-            # if batch % 500 == 0:
-            #     print('Epoch: {}/{}, Batch: {}/{}, Loss: {}'.format(epoch + 1, num_epochs, batch, num_batches, loss.item()))
-            #     # Compute the F1 score on the train set
-            #     train_f1 = test_model(model, inputs, targets)
-            #     print('Train F1 score: {}'.format(train_f1))
-
         # Compute the F1 score on the test set at the end of epoch
         test_f1, _, _ = test_model(model, test_inputs, test_targets)
         print('F1 score for Epoch {} on test set: {}'.format(epoch, test_f1))
@@ -89,11 +83,12 @@ def test_model(model, inputs, targets, name = 'train'):
         y_pred = np.array(y_pred)
         y_pred[y_pred >= 0.5] = 1
         y_pred[y_pred < 0.5] = 0
+        accuracy = accuracy_score(targets, y_pred)
         f1 = f1_score(targets, y_pred)
         precision = precision_score(targets, y_pred)
         recall = recall_score(targets, y_pred)
         get_roc(targets, y_pred, f'FFN_{name}')
-    return f1, precision, recall
+    return f1, precision, recall, accuracy
 
 train = False
 if os.path.exists('model.pkl') and not train:
@@ -101,12 +96,14 @@ if os.path.exists('model.pkl') and not train:
 else:
     train_model(model, inputs, targets, test_inputs, test_targets)
 
-f1, precision, recall = test_model(model, test_inputs, test_targets, 'test')
+f1, precision, recall, accuracy = test_model(model, test_inputs, test_targets, 'test')
 print('F1 score on test set: {}'.format(f1))
 print('Precision score on test set: {}'.format(precision))
 print('Recall score on test set: {}'.format(recall))
+print('Accuracy score on test set: {}'.format(accuracy))
 
-f1, precision, recall = test_model(model, inputs, targets)
+f1, precision, recall, accuracy = test_model(model, inputs, targets)
 print('F1 score on train set: {}'.format(f1))
 print('Precision score on train set: {}'.format(precision))
 print('Recall score on train set: {}'.format(recall))
+print('Accuracy score on train set: {}'.format(accuracy))
